@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Магазин Vape</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background: #121212;
+      color: white;
+      padding: 10px;
+    }
+    .product {
+      background: #1e1e1e;
+      border-radius: 10px;
+      padding: 10px;
+      margin-bottom: 15px;
+    }
+    button {
+      background: orange;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 6px;
+      margin-top: 10px;
+      cursor: pointer;
+    }
+    #cart {
+      margin-top: 20px;
+      padding: 15px;
+      background: #2a2a2a;
+      border-radius: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Каталог товаров</h1>
+
+  <div class="product">
+    <h3>WAKA 20000</h3>
+    <p>Цена: 1400₽</p>
+    <button onclick="addToCart('WAKA 20000', 1400)">Добавить в корзину</button>
+  </div>
+
+  <div class="product">
+    <h3>Vozol Vista 20000</h3>
+    <p>Цена: 1200₽</p>
+    <button onclick="addToCart('Vozol Vista 20000', 1200)">Добавить в корзину</button>
+  </div>
+
+  <div class="product">
+    <h3>Bubble Mon 15000</h3>
+    <p>Цена: 1200₽</p>
+    <button onclick="addToCart('Bubble Mon 15000', 1200)">Добавить в корзину</button>
+  </div>
+
+  <div id="cart">
+    <h2>Корзина</h2>
+    <ul id="cartList"></ul>
+    <p><strong>Итого:</strong> <span id="total">0</span>₽</p>
+    <button onclick="checkout()">Оформить заказ</button>
+  </div>
+
+  <script>
+    const cart = [];
+
+    function addToCart(name, price) {
+      cart.push({ name, price });
+      renderCart();
+    }
+
+    function renderCart() {
+      const cartList = document.getElementById("cartList");
+      cartList.innerHTML = "";
+      let total = 0;
+      cart.forEach(item => {
+        const li = document.createElement("li");
+        li.textContent = `${item.name} — ${item.price}₽`;
+        cartList.appendChild(li);
+        total += item.price;
+      });
+      document.getElementById("total").textContent = total;
+    }
+
+    function checkout() {
+      if (cart.length === 0) return alert("Корзина пуста!");
+
+      let message = "🛒 Заказ:\n";
+      cart.forEach(item => {
+        message += `• ${item.name} — ${item.price}₽\n`;
+      });
+      const total = cart.reduce((sum, item) => sum + item.price, 0);
+      message += `\n💰 Итого: ${total}₽\n💵 Оплата: при получении`;
+
+      Telegram.WebApp.sendData(message);
+    }
+
+    Telegram.WebApp.ready();
+  </script>
+</body>
+</html>
