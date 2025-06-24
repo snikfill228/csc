@@ -9,7 +9,7 @@ def start(message):
     markup = InlineKeyboardMarkup()
     markup.add(InlineKeyboardButton(
         "🛍 Открыть магазин",
-        web_app=WebAppInfo(url="https://your-shop.vercel.app")  # замени на свой URL
+        web_app=WebAppInfo(url="https://cscs-snikfills-projects.vercel.app")  # замени на свой URL
     ))
     bot.send_message(message.chat.id, "Добро пожаловать в наш магазин! 👇", reply_markup=markup)
 
