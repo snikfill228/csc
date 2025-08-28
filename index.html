@@ -1,101 +1,87 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Магазин Vape</title>
-  <style>
-    body {
-      font-family: sans-serif;
-      background: #121212;
-      color: white;
-      padding: 10px;
-    }
-    .product {
-      background: #1e1e1e;
-      border-radius: 10px;
-      padding: 10px;
-      margin-bottom: 15px;
-    }
-    button {
-      background: orange;
-      border: none;
-      padding: 8px 12px;
-      border-radius: 6px;
-      margin-top: 10px;
-      cursor: pointer;
-    }
-    #cart {
-      margin-top: 20px;
-      padding: 15px;
-      background: #2a2a2a;
-      border-radius: 10px;
-    }
-  </style>
-</head>
-<body>
-  <h1>Каталог товаров</h1>
+<html import { useState } from "react";
+<html import { Card, CardContent } from "@/components/ui/card";
+<html import { Button } from "@/components/ui/button";
 
-  <div class="product">
-    <h3>WAKA 20000</h3>
-    <p>Цена: 1400₽</p>
-    <button onclick="addToCart('WAKA 20000', 1400)">Добавить в корзину</button>
-  </div>
 
-  <div class="product">
-    <h3>Vozol Vista 20000</h3>
-    <p>Цена: 1200₽</p>
-    <button onclick="addToCart('Vozol Vista 20000', 1200)">Добавить в корзину</button>
-  </div>
+const categories = {
+<div"Жидкости": [
+<div{ name: "Ogo Reels", price: "от 500₽", img: "/img/ogo.png", options: ["Манго", "Арбуз", "Виноград"] },
+<div{ name: "Pound Salt", price: "от 550₽", img: "/img/pound.png", options: ["Яблоко", "Кола", "Лайм"] }
+],
+<div"Одноразки": [
+<div{ name: "GeekBar DF 8000", price: "от 700₽", img: "/img/geekbar.png", options: ["Blue Razz Ice", "Strawberry", "Peach"] },
+<div{ name: "Puffmi Tank 16000", price: "от 1200₽", img: "/img/puffmi.png", options: ["Chocolate Popcorn", "Mint", "Berry Mix"] }
+],
+<div"Pod-системы": [
+<div{ name: "VooPoo Drag X", price: "от 2500₽", img: "/img/voopoo.png", options: ["Черный", "Синий", "Красный"] },
+<div{ name: "Caliburn G2", price: "от 2300₽", img: "/img/caliburn.png", options: ["Серый", "Фиолетовый", "Золотой"] }
+]
+};
 
-  <div class="product">
-    <h3>Bubble Mon 15000</h3>
-    <p>Цена: 1200₽</p>
-    <button onclick="addToCart('Bubble Mon 15000', 1200)">Добавить в корзину</button>
-  </div>
 
-  <div id="cart">
-    <h2>Корзина</h2>
-    <ul id="cartList"></ul>
-    <p><strong>Итого:</strong> <span id="total">0</span>₽</p>
-    <button onclick="checkout()">Оформить заказ</button>
-  </div>
+export default function VapeCatalog() {
+const [selectedCategory, setSelectedCategory] = useState(null);
+const [selectedProduct, setSelectedProduct] = useState(null);
 
-  <script>
-    const cart = [];
 
-    function addToCart(name, price) {
-      cart.push({ name, price });
-      renderCart();
-    }
+return (
+<div className="relative p-6 max-w-4xl mx-auto">
+{/* Фон с логотипом */}
+<div className="absolute inset-0 flex items-center justify-center opacity-5">
+<img src="/img/csclogo.png" alt="CSC Logo" className="w-3/4" />
+</div>
 
-    function renderCart() {
-      const cartList = document.getElementById("cartList");
-      cartList.innerHTML = "";
-      let total = 0;
-      cart.forEach(item => {
-        const li = document.createElement("li");
-        li.textContent = `${item.name} — ${item.price}₽`;
-        cartList.appendChild(li);
-        total += item.price;
-      });
-      document.getElementById("total").textContent = total;
-    }
 
-    function checkout() {
-      if (cart.length === 0) return alert("Корзина пуста!");
+<h1 className="relative text-2xl font-bold mb-6 z-10">Каталог CSCshop</h1>
 
-      let message = "🛒 Заказ:\n";
-      cart.forEach(item => {
-        message += `• ${item.name} — ${item.price}₽\n`;
-      });
-      const total = cart.reduce((sum, item) => sum + item.price, 0);
-      message += `\n💰 Итого: ${total}₽\n💵 Оплата: при получении`;
 
-      Telegram.WebApp.sendData(message);
-    }
+{/* Категории */}
+<div className="relative flex gap-3 mb-6 z-10">
+{Object.keys(categories).map((cat) => (
+<Button
+key={cat}
+variant={selectedCategory === cat ? "default" : "outline"}
+onClick={() => { setSelectedCategory(cat); setSelectedProduct(null); }}
+>
+{cat}
+</Button>
+))}
+</div>
 
-    Telegram.WebApp.ready();
-  </script>
-</body>
-</html>
+
+{/* Список товаров или детали товара */}
+<div className="relative z-10">
+{!selectedProduct ? (
+<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+{selectedCategory &&
+categories[selectedCategory].map((item, i) => (
+<Card key={i} className="rounded-2xl shadow-md cursor-pointer" onClick={() => setSelectedProduct(item)}>
+<CardContent className="p-4 flex flex-col items-center">
+<img src={item.img} alt={item.name} className="w-32 h-32 object-contain mb-4" />
+<h2 className="text-lg font-semibold">{item.name}</h2>
+<p className="text-gray-600 mb-2">{item.price}</p>
+<Button>+</Button>
+</CardContent>
+</Card>
+))}
+</div>
+) : (
+<div className="p-4 border rounded-2xl shadow-md bg-white/80 backdrop-blur">
+<Button variant="outline" onClick={() => setSelectedProduct(null)} className="mb-4">← Назад</Button>
+<div className="flex flex-col items-center">
+<img src={selectedProduct.img} alt={selectedProduct.name} className="w-40 h-40 object-contain mb-4" />
+<h2 className="text-xl font-bold mb-2">{selectedProduct.name}</h2>
+<p className="text-gray-600 mb-4">{selectedProduct.price}</p>
+<h3 className="text-lg font-semibold mb-2">Доступные варианты:</h3>
+<ul className="list-disc pl-6 text-gray-700">
+{selectedProduct.options.map((opt, idx) => (
+<li key={idx}>{opt}</li>
+))}
+</ul>
+</div>
+</div>
+)}
+</div>
+</div>
+);
+}
